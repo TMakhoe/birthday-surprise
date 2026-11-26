@@ -1,40 +1,38 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Envelope from "./components/Envelope.jsx";
+import Balloons from "./components/Balloons.jsx";
+import Letter from "./components/Letter.jsx";
+import FloatingHearts from "./components/FloatingHearts.jsx";
+import ImageAutoSlider from "./components/ui/ImageAutoSlider.jsx";
 import "./App.css";
 
-function App() {
-  const [isOpen, setIsOpen] = useState(false);
+// How long the balloons float before the letter appears (ms)
+const LETTER_DELAY = 2600;
 
-  const handleEnvelopeClick = () => {
-    setIsOpen(!isOpen);
-  };
+function App() {
+  // closed -> balloons -> letter
+  const [stage, setStage] = useState("closed");
+
+  useEffect(() => {
+    if (stage !== "balloons") return;
+    const timer = setTimeout(() => setStage("letter"), LETTER_DELAY);
+    return () => clearTimeout(timer);
+  }, [stage]);
+
+  const isOpen = stage !== "closed";
 
   return (
     <div className="birthday-container">
+      <FloatingHearts />
 
-      <h1>Happy Birthday, MaMakhoe ❤️</h1>
+      <h1>Happy Birthday, My Love ❤️</h1>
 
-      <p className="subtitle">
-        I have something special for you...
-      </p>
+      <p className="subtitle">I have something special for you...</p>
 
-      <div
-        className={`envelope-container ${isOpen ? "open" : ""}`}
-        onClick={handleEnvelopeClick}
-      >
-        <div className="envelope">
-
-          <div className="letter">
-            <p>To My Love ❤️</p>
-          </div>
-
-          <div className="envelope-flap"></div>
-
-          <div className="envelope-front"></div>
-
-        </div>
-      </div>
-
+      <Envelope
+        isOpen={isOpen}
+        onToggle={() => setStage(isOpen ? "closed" : "balloons")}
+      />
 
       <p className="instruction">
         {isOpen
@@ -42,6 +40,10 @@ function App() {
           : "Click the envelope to open your surprise 💌"}
       </p>
 
+      <ImageAutoSlider />
+
+      {isOpen && <Balloons />}
+      {stage === "letter" && <Letter onClose={() => setStage("closed")} />}
     </div>
   );
 }
