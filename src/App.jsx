@@ -12,7 +12,7 @@ function App() {
   return (
     <div className="birthday-container">
 
-      <h1>Happy Birthday, My Love ❤️</h1>
+      <h1>Happy Birthday, MaMakhoe ❤️</h1>
 
       <p className="subtitle">
         I have something special for you...
@@ -34,6 +34,7 @@ function App() {
 
         </div>
       </div>
+
 
       <p className="instruction">
         {isOpen
