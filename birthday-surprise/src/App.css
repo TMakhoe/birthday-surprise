@@ -1,0 +1,376 @@
+.birthday-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #fff0f5;
+  font-family: Georgia, serif;
+  overflow: hidden;
+  padding: 20px;
+  /* lets the background hearts sit behind the page content */
+  position: relative;
+  isolation: isolate;
+}
+
+.birthday-container h1 {
+  color: #c44569;
+  font-size: 38px;
+  margin-bottom: 15px;
+}
+
+.subtitle {
+  color: #8f5266;
+  font-size: 18px;
+  /* leaves room for the letter when it slides up */
+  margin-bottom: 130px;
+}
+
+.envelope-container {
+  cursor: pointer;
+  perspective: 800px;
+}
+
+.envelope-container:focus-visible {
+  outline: 2px dashed #c44569;
+  outline-offset: 8px;
+}
+
+.envelope {
+  position: relative;
+  width: 280px;
+  height: 180px;
+  background: #e88ca8;
+  border-radius: 5px;
+  transition: transform 0.3s ease;
+}
+
+.envelope-container:hover .envelope {
+  transform: translateY(-4px);
+}
+
+/* Flap: folds back on close, delayed so the letter goes in first */
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 140px solid transparent;
+  border-right: 140px solid transparent;
+  border-top: 100px solid #d96d91;
+  transform-origin: top;
+  z-index: 3;
+  transition:
+    transform 0.5s ease 0.5s,
+    z-index 0s linear 0.5s;
+}
+
+.open .envelope-flap {
+  transform: rotateX(180deg);
+  z-index: 0;
+  transition:
+    transform 0.5s ease,
+    z-index 0s linear 0.25s;
+}
+
+/* Front pocket: covers the whole envelope so the letter is hidden until it slides out */
+.envelope-front {
+  position: absolute;
+  inset: 0;
+  background: #e88ca8;
+  border-radius: 5px;
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* Side folds */
+.envelope-front::before,
+.envelope-front::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-top: 90px solid transparent;
+  border-bottom: 90px solid transparent;
+}
+
+.envelope-front::before {
+  left: 0;
+  border-left: 140px solid #e298b0;
+}
+
+.envelope-front::after {
+  right: 0;
+  border-right: 140px solid #e298b0;
+}
+
+/* Bottom fold, drawn on top of the side folds */
+.envelope-front > .envelope-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 140px solid transparent;
+  border-right: 140px solid transparent;
+  border-bottom: 100px solid #ec9fb7;
+  z-index: 1;
+}
+
+/* Letter: slides out after the flap has opened */
+.letter {
+  position: absolute;
+  width: 240px;
+  height: 150px;
+  background: white;
+  left: 20px;
+  top: 15px;
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  z-index: 1;
+  transition: transform 0.5s ease;
+}
+
+.open .letter {
+  transform: translateY(-120px);
+  transition: transform 0.6s ease 0.5s;
+}
+
+.letter-title {
+  color: #c44569;
+  font-size: 18px;
+}
+
+
+.instruction {
+  margin-top: 45px;
+  color: #8f5266;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope,
+  .envelope-flap,
+  .letter {
+    transition: none !important;
+  }
+}
+
+/* ---------- Balloons ---------- */
+.balloons {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.balloon {
+  position: absolute;
+  bottom: -160px;
+  width: calc(60px * var(--size));
+  height: calc(75px * var(--size));
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), transparent 40%),
+    var(--color);
+  border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%;
+  animation-name: float-up;
+  animation-timing-function: ease-in;
+  animation-fill-mode: both;
+}
+
+/* knot */
+.balloon::before {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 8px solid var(--color);
+}
+
+/* string */
+.balloon::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 1px;
+  height: calc(70px * var(--size));
+  background: rgba(143, 82, 102, 0.5);
+}
+
+@keyframes float-up {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(calc(25px * var(--sway)), -60vh) rotate(calc(6deg * var(--sway)));
+  }
+  100% {
+    transform: translate(calc(-15px * var(--sway)), -130vh) rotate(calc(-4deg * var(--sway)));
+    opacity: 1;
+  }
+}
+
+/* ---------- Full letter ---------- */
+.letter-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4vh 16px;
+  background: rgba(255, 240, 245, 0.65);
+  backdrop-filter: blur(3px);
+  z-index: 10;
+  animation: fade-in 0.4s ease both;
+}
+
+.letter-card {
+  position: relative;
+  width: min(92vw, 620px);
+  height: 90vh;
+  overflow-y: auto;
+  padding: 56px 48px 40px;
+  background: #fffdfb;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(196, 69, 105, 0.25);
+  border-top: 6px solid #e88ca8;
+  text-align: left;
+  font-family: Georgia, serif;
+  transform-origin: center bottom;
+  animation: letter-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.letter-card-title {
+  color: #c44569;
+  font-size: 32px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.letter-card-body p {
+  color: #6e3f4f;
+  font-size: 18px;
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+
+.letter-card-signature {
+  margin-top: 36px;
+  color: #c44569;
+  font-size: 20px;
+  font-style: italic;
+  text-align: right;
+}
+
+.letter-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: none;
+  background: none;
+  font-size: 30px;
+  line-height: 1;
+  color: #c44569;
+  cursor: pointer;
+}
+
+@keyframes letter-rise {
+  from {
+    transform: translateY(35vh) scale(0.35);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 500px) {
+  .letter-card {
+    padding: 48px 24px 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .balloon {
+    display: none;
+  }
+  .letter-card,
+  .letter-overlay {
+    animation: none;
+  }
+}
+
+/* ---------- Background hearts ---------- */
+.floating-hearts {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.floating-heart {
+  position: absolute;
+  bottom: -60px;
+  animation-name: heart-rise;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.floating-heart svg {
+  display: block;
+  animation-name: heart-sway;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes heart-rise {
+  from {
+    transform: translateY(0) scale(0.8);
+  }
+  to {
+    transform: translateY(calc(-100vh - 120px)) scale(1.1);
+  }
+}
+
+@keyframes heart-sway {
+  from {
+    transform: translateX(calc(var(--sway) * -1)) rotate(-12deg);
+  }
+  to {
+    transform: translateX(var(--sway)) rotate(12deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-hearts {
+    display: none;
+  }
+}
